@@ -12,4 +12,3 @@ const genreSchema = mongoose.Schema(
 );
 
 module.exports = mongoose.model("Genre", genreSchema);
-``

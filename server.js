@@ -4,6 +4,7 @@ const debug = require("debug")("app:startup");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const genres = require("./routes/genres");
+const customers = require("./routes/customers");
 const errorHandler = require("./middlewares/errorHandler");
 const connectDB = require("./config/dbConnection");
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(helmet());
 if (process.env.NODE_ENV === "development") app.use(morgan("tiny"));
 app.use("/api/genres", genres);
+app.use('/api/customers', customers);
 app.use(errorHandler);
 
 const port = process.env.PORT || 3001;
