@@ -1,6 +1,5 @@
-const Joi = require("joi");
 const debug = require("debug")("app:startup");
-const Genre = require("../models/genreModel");
+const { Genre, genreValidation } = require("../models/genreModel");
 const asyncHandler = require("express-async-handler");
 
 const getGenre = asyncHandler(async (req, res) => {
@@ -40,11 +39,9 @@ const updateGenre = asyncHandler(async (req, res) => {
     throw new Error(error.details[0].message);
   }
 
-  const genre = await Genre.findByIdAndUpdate(
-    req.params.id, 
-    req.body, 
-    { new: true }   
-  );
+  const genre = await Genre.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
 
   if (!genre) {
     res.status(404);
@@ -56,7 +53,7 @@ const updateGenre = asyncHandler(async (req, res) => {
 
 const deleteGenre = asyncHandler(async (req, res) => {
   const genre = await Genre.findByIdAndRemove(req.params.id);
-  
+
   if (!genre) {
     res.status(404);
     throw new Error("Genre Not Found");
@@ -64,14 +61,6 @@ const deleteGenre = asyncHandler(async (req, res) => {
 
   res.status(200).send(genre);
 });
-
-function genreValidation(genre) {
-  const joiSchema = Joi.object({
-    name: Joi.string().min(5).max(50).required(),
-  });
-
-  return joiSchema.validate(genre);
-}
 
 module.exports = {
   getGenre,

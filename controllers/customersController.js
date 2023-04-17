@@ -1,5 +1,4 @@
-const Joi = require ('joi');
-const Customer = require('../models/customerModel');
+const { Customer, validateCustomer} = require('../models/customerModel');
 const asyncHandler = require('express-async-handler');
 
 const getCustomer = asyncHandler(async(req, res) => {
@@ -59,15 +58,7 @@ const deleteCustomer = asyncHandler(async(req, res) => {
     res.status(200).send(customer);
 });
 
-function validateCustomer (customer){
-    const joiSchema = Joi.object({
-        name: Joi.string().min(3).max(50).required(),
-        phone: Joi.number().required(),
-        isGold: Joi.boolean().required()
-    });
 
-    return joiSchema.validate(customer);
-}
 
 module.exports = {
     getCustomer,
