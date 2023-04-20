@@ -7,9 +7,10 @@ const genreSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add the genre name"],
       trim: true,
-    },
-  },
-  { timestamps: true }
+      minlength: 5,
+      maxlength: 50
+    }
+  }
 );
 
 function genreValidation(genre) {
@@ -22,3 +23,4 @@ function genreValidation(genre) {
 
 exports.Genre = mongoose.model("Genre", genreSchema);
 exports.genreValidation = genreValidation;
+exports.genreSchema = genreSchema;
