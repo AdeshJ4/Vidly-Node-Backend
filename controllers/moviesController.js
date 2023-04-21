@@ -1,8 +1,15 @@
 const asyncHandler = require("express-async-handler");
 const { Movie, movieValidation } = require("../models/movieModel");
 const { Genre } = require("../models/genreModel");
+const mongoose = require("mongoose");
+const debug = require("debug")("app:startup");
 
 const getMovie = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid MovieID");
+  }
+
   const movie = await Movie.findById(req.params.id);
   if (!movie) {
     res.status(404);
@@ -43,6 +50,11 @@ const createMovie = asyncHandler(async (req, res) => {
 });
 
 const updateMovie = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid MovieID");
+  }
+
   const { error } = movieValidation(req.body);
   if (error) {
     res.status(400);
@@ -78,6 +90,12 @@ const updateMovie = asyncHandler(async (req, res) => {
 });
 
 const deleteMovie = asyncHandler(async (req, res) => {
+  
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid MovieID");
+  }
+  
   const movie = await Movie.findByIdAndRemove(req.params.id);
   if (!movie) {
     res.status(404);

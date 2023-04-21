@@ -1,8 +1,14 @@
 const debug = require("debug")("app:startup");
 const { Genre, genreValidation } = require("../models/genreModel");
 const asyncHandler = require("express-async-handler");
+const mongoose = require("mongoose");
 
 const getGenre = asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid GenreId");
+  }
+
   const genre = await Genre.findById(req.params.id);
   if (!genre) {
     res.status(404);
@@ -32,6 +38,11 @@ const createGenre = asyncHandler(async (req, res) => {
 });
 
 const updateGenre = asyncHandler(async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid GenreId");
+  }
   const { error } = genreValidation(req.body);
 
   if (error) {
@@ -52,6 +63,12 @@ const updateGenre = asyncHandler(async (req, res) => {
 });
 
 const deleteGenre = asyncHandler(async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400);
+    throw new Error("Invalid GenreId");
+  }
+  
   const genre = await Genre.findByIdAndRemove(req.params.id);
 
   if (!genre) {
