@@ -24,9 +24,9 @@ if(!config.get('jwtPrivateKey')){
 app.use(express.json());
 app.use(helmet());
 if (process.env.NODE_ENV === "development") app.use(morgan("tiny"));
-app.use("/api/genres", genres);
 app.use("/api/customers", customers);
 app.use("/api/movies", movies);
+app.use("/api/genres", genres);
 app.use("/api/rentals", rentals);
 app.use("/api/users", users);
 app.use(errorHandler);

@@ -9,14 +9,18 @@ const {
   deleteGenre,
 } = require("../controllers/genresController");
 
+const validateToken = require('../middlewares/validateTokenHandler');
+const isAdmin= require('../middlewares/validateAdmin');
+
 router.get("/", getGenres);
 
 router.get("/:id", getGenre);
 
-router.post("/", createGenre);
+router.post("/", validateToken, createGenre);
 
-router.put("/:id", updateGenre);
+router.put("/:id", validateToken, updateGenre);
 
-router.delete("/:id", deleteGenre);
+// you must be Admin to delete this Genre.
+router.delete("/:id", [validateToken, isAdmin], deleteGenre); 
 
 module.exports = router;
