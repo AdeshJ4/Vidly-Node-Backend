@@ -1,3 +1,4 @@
 {
+    "DB_Connection_String": "CONNECTION_STRING",
     "jwtPrivateKey": "ACCESS_TOKEN_SECRET_KEY"
 }   

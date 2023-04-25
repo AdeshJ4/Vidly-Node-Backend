@@ -15,6 +15,7 @@ const app = express();
 
 connectDB();
 
+
 if(!config.get('jwtPrivateKey')){
     debug('FATAL ERROR: jwrPrivateKey id not defined');
     process.exit(1);
