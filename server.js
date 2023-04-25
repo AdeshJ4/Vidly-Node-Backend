@@ -11,6 +11,7 @@ const users = require("./routes/users");
 const errorHandler = require("./middlewares/errorHandler");
 const connectDB = require("./dbConnection");
 const config = require('config');
+const compression = require("compression");
 const app = express();
 
 connectDB();
@@ -24,6 +25,7 @@ if(!config.get('jwtPrivateKey')){
 // Middlewares
 app.use(express.json());
 app.use(helmet());
+app.use(compression());
 if (process.env.NODE_ENV === "development") app.use(morgan("tiny"));
 app.use("/api/customers", customers);
 app.use("/api/movies", movies);
