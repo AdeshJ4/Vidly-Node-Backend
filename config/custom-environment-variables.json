@@ -1,4 +1,5 @@
 {
     "DB_Connection_String": "CONNECTION_STRING",
-    "jwtPrivateKey": "ACCESS_TOKEN_SECRET_KEY"
-}   
+    "jwtPrivateKey": "ACCESS_TOKEN_SECRET_KEY",
+    "NODE_ENV": "NODE_ENV"
+}

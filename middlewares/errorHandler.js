@@ -1,5 +1,5 @@
 const debug = require("debug")("app:startup");
-const { constants } = require("../constants");
+const { constants } = require("../startup/constants");
 
 const errorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode ? res.statusCode : 500;

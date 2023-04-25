@@ -1,3 +1,5 @@
 {
-    "jwtPrivateKey": ""
+    "DB_Connection_String": "",
+    "jwtPrivateKey": "",
+    "NODE_ENV": ""
 }
