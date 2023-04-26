@@ -8,6 +8,9 @@
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
+  "engines": {
+    "node": "18.14.2"
+  },
   "keywords": [],
   "author": "Adesh Pramod Jadhav",
   "license": "ISC",
