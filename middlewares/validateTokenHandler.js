@@ -1,34 +1,26 @@
-const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const config = require("config");
-const debug = require("debug")("app:startup");
 
-const validateToken = asyncHandler(async (req, res, next) => {
-  let token;
-  let authHandler = req.headers.Authorization || req.headers.authorization;
-  if (!authHandler || !authHandler.startsWith("Bearer")) {
-    res.status(401);
-    throw new Error("user is not authorized ot token is missing");
-  }
-  if (authHandler && authHandler.startsWith("Bearer")) {
-    token = authHandler.split(" ")[1];
-    jwt.verify(token, config.get("jwtPrivateKey"), (err, decodedData) => {
-      if (err) {
-        debug("I am inside err validationToken");
-        res.status(401);
-        throw new Error("User is not authorized");
-      } else {
-        debug(decodedData);
-        req.user = decodedData.user;
-        next();
-      }
-    });
+function validateToken(req, res, next) {
+  const token = req.header("X-auth-token");
+  if (!token) return res.status(401).send("Access denied. No token provided");
 
-    if (!token) {
-      res.status(401);
-      throw new Error("user is not authorized ot token is missing");
-    }
+  try {
+    /**
+     * decoded data is the payload data that we set in our userMode inside generateToken.
+     * now we are adding extra property inside a req which is user
+     * we can access user property like this :
+     * req.user._id or req.user.name
+     */
+    const decoded = jwt.verify(token, config.get("jwtPrivateKey"));
+    console.log("Decoded Token : ", decoded);
+    req.user = decoded;
+    next();
+  } catch (err) {
+    res.status(400).send("Invalid token");
   }
-});
+}
 
 module.exports = validateToken;
+
+// Unauthorized: 401 -> This HTTP status code requires user authentication.

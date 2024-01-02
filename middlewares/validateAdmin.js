@@ -1,12 +1,18 @@
-const asyncHandler = require("express-async-handler");
+// 401 - Unauthorized - give chance to resend valid json token
+// 403 - Forbidden    - if they sent valid json token but still don;t get access to api endpoint then they are forbidden
 
-const isAdmin = asyncHandler((req, res, next) => {
-  if (!req.user.isAdmin) {
-    res.status(403);
-    throw new Error("Access Denied");
+// this middleware will execute after validateTokenHandler
+const validateAdmin = (req, res, next) => {
+  try {
+    if (!req.user.isAdmin) {
+      return res.status(403).send("Access Denied");
+    }
+
+    next();
+  } catch (err) {
+    res.status(500).send(err.message);
   }
+};
 
-  next();
-});
 
-module.exports = isAdmin;
+module.exports = validateAdmin;

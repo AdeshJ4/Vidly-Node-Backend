@@ -1,26 +1,36 @@
-const express = require("express");
+/*
+vidly is an imaginary backend service for renting out movies.
+
+-> create a service for managing the list of genres : "http://vidly.com/api/genres"
+-> Each movie have a genre like action, horror, etc
+-> we should have a endpoint for getting all the list of genres because somewhere in our client routerlication 
+we have dropdown list for user to select genre.
+-> so we need endpoint to get all genres 
+-> we also able to create a new genre as well as update or delete an existing one
+
+ */
+
+const express = require('express');
 const router = express.Router();
-
-const {
-  getGenre,
-  getGenres,
-  createGenre,
-  updateGenre,
-  deleteGenre,
-} = require("../controllers/genresController");
-
+const {getGenre, getGenres, createGenre, updateGenre, deleteGenre} = require('../controllers/genreController');
 const validateToken = require('../middlewares/validateTokenHandler');
-const isAdmin= require('../middlewares/validateAdmin');
+const validateAdmin = require('../middlewares/validateAdmin');
 
-router.get("/", getGenres);
+// get all genres
+router.get('/', getGenres);
 
-router.get("/:id", getGenre);
+// get single genre
+router.get('/:id', getGenre);
 
-router.post("/", validateToken, createGenre);
+// post a genre
+router.post('/', validateToken, createGenre);
 
-router.put("/:id", validateToken, updateGenre);
+// update a genre
+router.put('/:id', validateToken, updateGenre);
 
-// you must be Admin to delete this Genre.
-router.delete("/:id", [validateToken, isAdmin], deleteGenre); 
+
+// delete genre
+router.delete('/:id', [validateToken, validateAdmin], deleteGenre);
+
 
 module.exports = router;

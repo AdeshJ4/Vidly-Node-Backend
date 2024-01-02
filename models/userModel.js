@@ -1,64 +1,87 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const config = require("config");
+const passwordComplexity = require("joi-password-complexity");
 const jwt = require("jsonwebtoken");
+const config = require("config");
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "UserName is required..."],
+    required: [true, "Name is required"],
+    trim: true,
     minlength: 5,
     maxlength: 50,
   },
   email: {
     type: String,
-    required: [true, "Email is required..."],
-    unique: [true, "Email Address already taken"],
-    minlength: 5,
-    maxlength: 255,
+    required: [true, "Email is required"],
+    unique: [true, "Email address already taken"],
+    minlength: 11,
+    maxlength: 100,
   },
   password: {
     type: String,
-    required: [true, "Please add user password"],
+    required: [true, "Password required"],
     minlength: 5,
     maxlength: 1024, // in encoded format
   },
   isAdmin: {
-    type: Boolean 
-  }
+    type: Boolean,
+  },
 });
 
-// responsible for creating token
-userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign(
-    { user: { _id: this._id, username: this.name, email: this.email, isAdmin: this.isAdmin } }, // you can't use arrow function
-    config.get("jwtPrivateKey"), // process.env.ACCESS_TOKEN_SECRET_KEY,
-    { expiresIn: "1m" }
-  );
+/**
+ * responsible for creating tokens
+ * Encapsulating Logic of token in Mongoose Models
+ * Adding a method to a Mongoose mode
+ */
 
+userSchema.methods.generateToken = function () {
+  const token = jwt.sign(
+    { _id: this._id, userName: this.name, isAdmin: this.isAdmin },
+    config.get("jwtPrivateKey"),
+    { expiresIn: "2 days" }
+  );
+ 
   return token;
 };
 
+
 // this validate function is only for validating new user.
-const validateUserRegister = (user) => {
+function validateUserRegister(user) {
   const joiSchema = Joi.object({
-    name: Joi.string().min(5).max(50).required(),
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(), // original password
+    name: Joi.string().required().min(5).max(50).trim(),
+    email: Joi.string().min(11).max(255).required().email(),
+    /**
+     * Creates a Joi object that validates password complexity.
+     * When no options are specified, the following are used:
+     * {
+            min: 8,
+            max: 26,
+            lowerCase: 1,
+            upperCase: 1,
+            numeric: 1,
+            symbol: 1,
+            requirementCount: 4,
+        }
+     */
+    password: passwordComplexity().required(),
   });
 
   return joiSchema.validate(user);
-};
+}
 
-const validateUserLogin = (user) => {
+// this validate function is only for authenticating user at the time of login.
+function validateUserLogin(user) {
   const joiSchema = Joi.object({
-    email: Joi.string().min(5).max(255).required().email(),
-    password: Joi.string().min(5).max(255).required(),
+    email: Joi.string().required().min(5).max(50).trim(),
+    password: passwordComplexity().required(),
   });
 
   return joiSchema.validate(user);
-};
+}
 
-exports.User = mongoose.model("User", userSchema);
-exports.validateUserRegister = validateUserRegister;
-exports.validateUserLogin = validateUserLogin;
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = { User, validateUserRegister, validateUserLogin };

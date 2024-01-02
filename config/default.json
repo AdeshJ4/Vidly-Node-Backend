@@ -1,5 +1,6 @@
 {
-    "DB_Connection_String": "",
+    "name": "",
+    "Db_Connection_String" : "",
     "jwtPrivateKey": "",
-    "NODE_ENV": ""
+    "NODE_ENV":""
 }

@@ -1,19 +1,28 @@
-const express = require('express');
-const router = express.Router();
-const { getCustomer, getCustomers, createCustomer, updateCustomer, deleteCustomer } = require('../controllers/customersController');
+// customer can only be created by user(employee)
+
+const express = require("express");
+const router = express();
+const {getCustomer, getCustomers, createCustomer, updateCustomer, deleteCustomer} = require('../controllers/customerController');
 
 const validateToken = require('../middlewares/validateTokenHandler');
-const isAdmin= require('../middlewares/validateAdmin');
+const validateAdmin = require('../middlewares/validateAdmin');
 
-router.get('/', getCustomers);
+router.use(validateToken);
 
+// get Single Customer
 router.get('/:id', getCustomer);
 
-router.post('/', validateToken,  createCustomer);
+// get all the customers
+router.get('/', getCustomers);
 
-router.put('/:id', validateToken, updateCustomer);
+// create Customer
+router.post('/',createCustomer );
 
-router.delete('/:id', validateToken, deleteCustomer);
+//update customer
+router.put('/:id', updateCustomer);
+
+// delete customer
+router.delete('/:id', validateAdmin, deleteCustomer);
 
 
 module.exports = router;
