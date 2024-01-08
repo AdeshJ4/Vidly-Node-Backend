@@ -10,9 +10,9 @@ const { Genre } = require("../models/genreModel");
 const getMovies = async (req, res) => {
   try {
     const movies = await Movie.find();
-    res.status(200).send(movies);
+    return res.status(200).send(movies);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -31,9 +31,9 @@ const getMovie = async (req, res) => {
     if (!movie) {
       return res.status(404).send(`Movie not found`);
     }
-    res.status(200).send(movie);
+    return res.status(200).send(movie);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -81,9 +81,9 @@ const createMovie = async (req, res) => {
       dailyRentalRate: req.body.dailyRentalRate,
     });
 
-    res.status(201).send(movie);
+    return res.status(201).send(movie);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -127,9 +127,9 @@ const updateMovie = async (req, res) => {
       return res.status(404).send("Movie not found");
     }
 
-    res.status(200).send(movie);
+    return res.status(200).send(movie);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -150,9 +150,9 @@ const deleteMovie = async (req, res) => {
       return res.status(404).send("Movie Not found");
     }
 
-    res.status(200).send(movie);
+    return res.status(200).send(movie);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

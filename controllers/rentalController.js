@@ -16,9 +16,9 @@ const mongoose = require("mongoose");
 const getRentals = async (req, res) => {
   try {
     const rentals = await Rental.find().sort("-dateOut"); // -dateOut in descending order
-    res.status(200).send(rentals);
+    return res.status(200).send(rentals);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -36,9 +36,9 @@ const getRental = async (req, res) => {
     const rental = await Rental.findById(req.params.id);
     if (!rental) return res.status(404).send("rental Not Found");
 
-    res.status(200).send(rental);
+    return res.status(200).send(rental);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -82,10 +82,10 @@ const createRental = async (req, res) => {
 
     movie.numberInStock--;
     await movie.save();
-    res.status(200).send(rental);
+    return res.status(200).send(rental);
     
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

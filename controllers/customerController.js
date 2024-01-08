@@ -3,17 +3,20 @@ const { Customer, validateCustomer } = require("../models/customerModel");
 
 /*
     1. @desc : Get All Customers
-    2. @route GET : /api/customers
+    2. @route GET : /api/customers?pageNumber=2
     3. @access public
 */
 const getCustomers = async (req, res) => {
   try {
-    const customers = await Customer.find();
-    res.status(200).send(customers);
+    const pageNumber = parseInt(req.query.pageNumber) || 1; // Get the requested page (default to page 1 if not provided)
+    const pageSize = 10;
+    const customers = await Customer.find().skip((pageNumber - 1) * pageSize).limit(pageSize);
+    return res.status(200).json(customers);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
+
 
 /*
     1. @desc : Get Single Customer
@@ -24,7 +27,7 @@ const getCustomers = async (req, res) => {
 const getCustomer = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)){
-      res.status(400).send("Invalid CustomerID");
+      return res.status(400).send("Invalid CustomerID");
     }
 
     const customer = await Customer.findById(req.params.id);
@@ -34,9 +37,9 @@ const getCustomer = async (req, res) => {
         .send(`The customer with given id ${req.params.id} not found`);
     }
 
-    res.status(200).send(customer);
+    return res.status(200).send(customer);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -58,9 +61,9 @@ const createCustomer = async (req, res) => {
       isGold: req.body.isGold,
     });
 
-    res.status(201).send(customer);
+    return res.status(201).send(customer);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -73,7 +76,7 @@ const updateCustomer = async (req, res) => {
   try {
 
     if (!mongoose.Types.ObjectId.isValid(req.params.id)){
-      res.status(400).send("Invalid CustomerID");
+      return res.status(400).send("Invalid CustomerID");
     }
 
     const { error } = validateCustomer(req.body);
@@ -87,9 +90,9 @@ const updateCustomer = async (req, res) => {
         .status(404)
         .send(`The Customer with given id ${req.params.id} not found`);
 
-    res.status(200).send(customer);
+      return res.status(200).send(customer);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -102,7 +105,7 @@ const deleteCustomer = async (req, res) => {
   try {
 
     if (!mongoose.Types.ObjectId.isValid(req.params.id)){
-      res.status(400).send("Invalid CustomerID");
+      return res.status(400).send("Invalid CustomerID");
     }
 
 
@@ -113,9 +116,9 @@ const deleteCustomer = async (req, res) => {
         .send(`The Customer with given id ${req.params.id} not found`);
     }
 
-    res.status(200).send(customer);
+    return res.status(200).send(customer);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

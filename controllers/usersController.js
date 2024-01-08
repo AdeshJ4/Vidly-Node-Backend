@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
     });
 
     // exclude password
-    res.status(201).send({name: user.name, email: user.email});
+    return res.status(201).send({name: user.name, email: user.email});
       
       
     
@@ -74,7 +74,7 @@ const registerUser = async (req, res) => {
        });
       */
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -96,13 +96,13 @@ const loginUser = async (req, res) => {
     if (userAvailable &&(await bcrypt.compare(password, userAvailable.password))) {
       // jwt.sign is used to create tokens it takes payload obj as a 1st argument and as a 2nd it takes private key.
       const token = userAvailable.generateToken();
-      res.status(200).send(token);
+      return res.status(200).send(token);
     } else {
       // we don't have to tell user what is wrong may be email or password wrong.
-      res.status(400).send("Invalid email or password");
+      return res.status(400).send("Invalid email or password");
     }
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -111,12 +111,12 @@ const currentUser = async(req, res) => {
     
     // if you want all details about user(employee)
     const user = await User.findById(req.user._id).select('-password');
-    res.status(200).send(user);
+    return res.status(200).send(user);
 
     // you need only some details
     // res.status(200).json(req.user);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 

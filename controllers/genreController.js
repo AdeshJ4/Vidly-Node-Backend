@@ -9,9 +9,9 @@ const { Genre, validateGenre } = require("../models/genreModel");
 const getGenres = async (req, res) => {
   try {
     const genres = await Genre.find();
-    res.status(200).send(genres);
+    return res.status(200).send(genres);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -25,16 +25,16 @@ const getGenres = async (req, res) => {
 const getGenre = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      res.status(400).send("Invalid GenreID");
+      return res.status(400).send("Invalid GenreID");
     }
     const genre = await Genre.findById(req.params.id);
     if (!genre)
       return res
         .status(404)
         .send(`The genre with given id ${req.param.is} not found`);
-    res.status(200).send(genre);
+        return res.status(200).send(genre);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -59,9 +59,9 @@ const createGenre = async (req, res) => {
       name: req.body.name,
     });
 
-    res.status(201).send(genre);
+    return res.status(201).send(genre);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -75,7 +75,7 @@ const createGenre = async (req, res) => {
 const updateGenre = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      res.status(400).send("Invalid GenreID");
+      return res.status(400).send("Invalid GenreID");
     }
 
     const { error } = validateGenre(req.body);
@@ -90,9 +90,9 @@ const updateGenre = async (req, res) => {
         .send(`The genre with given id ${req.param.id} not found`);
     }
 
-    res.status(200).send(genre);
+    return res.status(200).send(genre);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -107,7 +107,7 @@ const updateGenre = async (req, res) => {
 const deleteGenre = async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      res.status(400).send("Invalid GenreID");
+      return res.status(400).send("Invalid GenreID");
     }
     
     const genre = await Genre.findByIdAndDelete(req.params.id);
@@ -116,9 +116,9 @@ const deleteGenre = async (req, res) => {
         .status(404)
         .send(`The Genre with given id ${req.params.id} not found`);
     }
-    res.status(200).send(genre);
+    return res.status(200).send(genre);
   } catch (err) {
-    res.status(500).send(err.message);
+    return res.status(500).send(err.message);
   }
 };
 
