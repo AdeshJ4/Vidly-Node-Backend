@@ -1,12 +1,11 @@
 const _ = require("lodash");
-const nodemailer = require('nodemailer');
-
 const bcrypt = require("bcrypt");
 const {
   User,
   validateUserRegister,
   validateUserLogin,
 } = require("../models/userModel");
+const emailService = require('../utils/emailService');
 
 const registerUser = async (req, res) => {
   try {
@@ -30,46 +29,19 @@ const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-/*
-The error message indicates that the authentication process for your Gmail account is failing, and Google is requesting an 
-application-specific password (app password).
-Keep in mind that application-specific passwords are more secure and recommended for use with less secure apps or apps that 
-don't support two-step verification
-*/
+    // send email to user
+    let subject = `Welcome to ${name} - Registration Successful.`;
+    let text =  `Dear ${name},
 
-    // send email to user/employee
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'vidlymoviesapplication@gmail.com',
-        pass: 'paop zyiv iila wqty'
-      }
-    });
+    Thank you for registering with Vidly! We are excited to welcome you to our community.
+    Your account has been successfully created, and you can now enjoy the benefits of being a member. If you have any questions 
+    or need assistance, feel free to reach out to our support team.
     
-    var mailOptions = {
-      from: 'vidlymoviesapplication@gmail.com',
-      to: email,
-      subject: `Welcome to ${name} - Registration Successful.`,
-      text: `Dear ${name},
+    Best regards,
+    Vidly Team
+    `
+    emailService.sendEmail(email, subject, text);
 
-      Thank you for registering with Vidly! We are excited to welcome you to our community.
-      
-      Your account has been successfully created, and you can now enjoy the benefits of being a member. If you have any questions 
-      or need assistance, feel free to reach out to our support team.
-      
-      Best regards,
-      Vidly Team
-      `
-    };
-    
-    transporter.sendMail(mailOptions, function(error, info){
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
-  
 
     // exclude password
     return res.status(201).send({name: user.name, email: user.email});

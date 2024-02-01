@@ -1,22 +1,24 @@
 const mongoose = require("mongoose");
 const { Customer, validateCustomer } = require("../models/customerModel");
-
+const emailService = require('../utils/emailService');
 /*
     1. @desc : Get All Customers
     2. @route GET : /api/customers?pageNumber=2
     3. @access public
 */
+
 const getCustomers = async (req, res) => {
   try {
     const pageNumber = parseInt(req.query.pageNumber) || 1; // Get the requested page (default to page 1 if not provided)
     const pageSize = 25;
-    const customers = await Customer.find().skip((pageNumber - 1) * pageSize).limit(pageSize);
+    const customers = await Customer.find()
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
     return res.status(200).json(customers);
   } catch (err) {
     return res.status(500).send(err.message);
   }
 };
-
 
 /*
     1. @desc : Get Single Customer
@@ -26,8 +28,8 @@ const getCustomers = async (req, res) => {
 
 const getCustomer = async (req, res) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)){
-      return res.status(400).send("Invalid f");
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).send("Invalid Email & Password");
     }
 
     const customer = await Customer.findById(req.params.id);
@@ -55,11 +57,29 @@ const createCustomer = async (req, res) => {
       return res.status(400).send(error.details[0].message);
     }
 
+    console.log("Create");
     const customer = await Customer.create({
       name: req.body.name,
       phone: req.body.phone,
+      email: req.body.email,
       isGold: req.body.isGold,
     });
+
+    // send emil to customer
+    let subject = `Welcome to Vidly - Registration Successful.`;
+    let text = `Dear ${customer.name},
+
+    Thank you for registering with Vidly! We are excited to welcome you to our community.
+    Your account has been successfully created, and you can now enjoy the benefits of being a member. If you have any questions 
+    or need assistance, feel free to reach out to our support team.
+    
+    Your Customer Id : ${customer._id}
+    
+    Best regards,
+    Vidly Team
+    `;
+    console.log("sendEmail");
+    emailService.sendEmail(customer.email, subject, text);
 
     return res.status(201).send(customer);
   } catch (err) {
@@ -74,8 +94,7 @@ const createCustomer = async (req, res) => {
 */
 const updateCustomer = async (req, res) => {
   try {
-
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)){
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).send("Invalid CustomerID");
     }
 
@@ -90,7 +109,7 @@ const updateCustomer = async (req, res) => {
         .status(404)
         .send(`The Customer with given id ${req.params.id} not found`);
 
-      return res.status(200).send(customer);
+    return res.status(200).send(customer);
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -103,11 +122,9 @@ const updateCustomer = async (req, res) => {
 */
 const deleteCustomer = async (req, res) => {
   try {
-
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)){
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).send("Invalid CustomerID");
     }
-
 
     const customer = await Customer.findByIdAndDelete(req.params.id);
     if (!customer) {
@@ -121,7 +138,6 @@ const deleteCustomer = async (req, res) => {
     return res.status(500).send(err.message);
   }
 };
-
 
 module.exports = {
   getCustomer,
