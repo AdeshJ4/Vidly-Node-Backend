@@ -2,7 +2,7 @@ const { Rental, validateRental } = require("../models/rentalModel");
 const { Customer } = require("../models/customerModel");
 const { Movie } = require("../models/movieModel");
 const mongoose = require("mongoose");
-
+const emailService = require('../utils/emailService');
 
 /*
     1. @desc : Get All rentals
@@ -68,6 +68,8 @@ const createRental = async (req, res) => {
         _id: customer._id,
         name: customer.name,
         phone: customer.phone,
+        email: customer.email,
+        isGold: customer.isGold
       },
       movie: {
         _id: movie._id,
@@ -75,10 +77,41 @@ const createRental = async (req, res) => {
         dailyRentalRate: movie.dailyRentalRate,
       },
       dateReturned: req.body.dateReturned,
+      rentalFee: movie.dailyRentalRate
     });
 
     movie.numberInStock--;
     await movie.save();
+
+
+    // send emil to customer
+    let subject = `Movie Rental Details - Thank You for Choosing Vidly`;
+    let text = `Dear ${customer.name},
+
+    Thank you for choosing Vidly for your movie rental needs. Here are the details of the movies you have rented:
+    
+    Rental ID: ${rental._id}
+    Customer ID: ${customer._id}
+    Date of Rental: ${rental.dateOut}
+    
+    Movies Rented:
+    1. Movie Title: ${movie.title}
+       Genre: ${movie.genre.name}
+       Rental Fee: ${movie.dailyRentalRate}
+  
+    
+    Total Rental Fee: ${rental.rentalFee}
+    Date Return: ${rental.dateReturned}
+    
+    Please ensure to return the movies by the specified return date to avoid any late fees. If you have any questions or concerns, feel free to contact our customer support.
+    
+    Thank you again for choosing Vidly. We hope you enjoy your movie-watching experience!
+    
+    Best regards,
+    Vidly Team
+    
+    `;
+    emailService.sendEmail(customer.email, subject, text);
     return res.status(200).send(rental);
     
   } catch (err) {

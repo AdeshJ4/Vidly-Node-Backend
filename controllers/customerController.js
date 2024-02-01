@@ -57,7 +57,6 @@ const createCustomer = async (req, res) => {
       return res.status(400).send(error.details[0].message);
     }
 
-    console.log("Create");
     const customer = await Customer.create({
       name: req.body.name,
       phone: req.body.phone,
@@ -78,7 +77,6 @@ const createCustomer = async (req, res) => {
     Best regards,
     Vidly Team
     `;
-    console.log("sendEmail");
     emailService.sendEmail(customer.email, subject, text);
 
     return res.status(201).send(customer);
