@@ -93,12 +93,12 @@ const createMovie = async (req, res) => {
     3. @access public
 */
 const updateMovie = async (req, res) => {
-  try {
-    
+
+  console.log(req.body);
+  try {    
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).send("Invalid ObjectId");
     }
-
     const { error } = validateMovie(req.body);
     if (error) {
       return res.status(400).send(error.details[0].message);

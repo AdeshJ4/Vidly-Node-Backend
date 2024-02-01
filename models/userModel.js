@@ -74,7 +74,7 @@ function validateUserRegister(user) {
 // this validate function is only for authenticating user at the time of login.
 function validateUserLogin(user) {
   const joiSchema = Joi.object({
-    email: Joi.string().required().min(5).max(50).trim(),
+    email: Joi.string().min(11).max(255).required().email(),
     password: passwordComplexity().required(),
   });
 

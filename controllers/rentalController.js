@@ -3,9 +3,6 @@ const { Customer } = require("../models/customerModel");
 const { Movie } = require("../models/movieModel");
 const mongoose = require("mongoose");
 
-// const Fawn = require("fawn");
-
-// Fawn.init("mongodb://127.0.0.1/playGround");
 
 /*
     1. @desc : Get All rentals

@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Genre, validateGenre } = require("../models/genreModel");
+const { Movie, validateMovie } = require("../models/movieModel");
 
 /*
     1. @desc : Get All Genre
@@ -90,12 +91,18 @@ const updateGenre = async (req, res) => {
         .send(`The genre with given id ${req.param.id} not found`);
     }
 
+    // update genre in movie api also
+    await Movie.updateMany({'genre._id': req.params.id}, {
+      $set: {
+        'genre.name': req.body.name
+      }
+    })
+
     return res.status(200).send(genre);
   } catch (err) {
     return res.status(500).send(err.message);
   }
 };
-
 
 
 

@@ -1,4 +1,6 @@
 const _ = require("lodash");
+const nodemailer = require('nodemailer');
+
 const bcrypt = require("bcrypt");
 const {
   User,
@@ -22,57 +24,56 @@ const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 1st way : using lodash library
-    // pick method create an object with selective properties in this case "name", "email", "password" from "req.body" obj.
-    // user = await User.create(_.pick(req.body,['name', 'email', 'password']));
-    /*
-      2nd way : manually assigning properties
-      */
     const user = await User.create({
       name, // name: req.body.name
       email,
       password: hashedPassword,
     });
 
+/*
+The error message indicates that the authentication process for your Gmail account is failing, and Google is requesting an 
+application-specific password (app password).
+Keep in mind that application-specific passwords are more secure and recommended for use with less secure apps or apps that 
+don't support two-step verification
+*/
+
+    // send email to user/employee
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'vidlymoviesapplication@gmail.com',
+        pass: 'paop zyiv iila wqty'
+      }
+    });
+    
+    var mailOptions = {
+      from: 'vidlymoviesapplication@gmail.com',
+      to: email,
+      subject: `Welcome to ${name} - Registration Successful.`,
+      text: `Dear ${name},
+
+      Thank you for registering with Vidly! We are excited to welcome you to our community.
+      
+      Your account has been successfully created, and you can now enjoy the benefits of being a member. If you have any questions 
+      or need assistance, feel free to reach out to our support team.
+      
+      Best regards,
+      Vidly Team
+      `
+    };
+    
+    transporter.sendMail(mailOptions, function(error, info){
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  
+
     // exclude password
     return res.status(201).send({name: user.name, email: user.email});
-      
-      
-    
-
-
-    // console.log(user);
-    // {  output
-    //   name: 'User 1',
-    //   email: 'user1@gmail.com',
-    //   password: '$2b$10$lKcSCS74md/gPQnH.5kE1OZckW1rqhsaUw.C8Rk5YnLbEywavLduS',
-    //   _id: new ObjectId('6593f491708585f07364b63f'),
-    //   __v: 0
-    // }
-
-    // const token = user.generateToken();
-
-    //1st way : using lodash package
-    // we don't have to send password and version property back to user
-    // pick method create an object with selective properties in this case "_id", "name", "email" from "user" obj.
-    // here we are sending a token in header section.
-    // response object also have headers
-    // header() method takes two arguments : 1. header name  2. its value
-    // header name must starts with 'x-anyName'
-    // return res.header("x-auth-token", token).json(token);
-
-    // return res
-    //   .header("X-auth-token", token)
-    //   .send(_.pick(user, ["_id", "name", "email"]));
-
-    // res.status(201).send(user);
-    /*
-      2st way: manually way of mapping 
-      res.status(201).send({
-         name: user.name,
-         email: user.email,
-       });
-      */
+  
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -86,13 +87,6 @@ const loginUser = async (req, res) => {
 
     const userAvailable = await User.findOne({ email });
 
-    console.log(userAvailable);
-    /*
-    -> comparing plain txt p/w with hashed p/w
-    -> our hashed p/w (userAvailable.password) does include salt so when we called this compare method bcrypt is going to take that 
-      salt and use that to rehash this plain txt p/w
-    -> compare method return boolean value
-    */
     if (userAvailable &&(await bcrypt.compare(password, userAvailable.password))) {
       // jwt.sign is used to create tokens it takes payload obj as a 1st argument and as a 2nd it takes private key.
       const token = userAvailable.generateToken();
