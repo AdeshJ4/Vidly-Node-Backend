@@ -2,7 +2,7 @@
 
 const express = require("express");
 const router = express();
-const {getCustomer, getCustomers, createCustomer, updateCustomer, deleteCustomer} = require('../controllers/customerController');
+const {getCustomer, getCustomers, getCustomersBySearch, createCustomer, updateCustomer, deleteCustomer, getCustomersByMembership} = require('../controllers/customerController');
 
 const validateToken = require('../middlewares/validateTokenHandler');
 const validateAdmin = require('../middlewares/validateAdmin');
@@ -14,6 +14,12 @@ router.get('/:id', getCustomer);
 
 // get all the customers
 router.get('/', getCustomers);
+
+// get customers according to membership
+router.get("/membership/:membership", getCustomersByMembership);
+
+// get customers according to search
+router.get("/search/:customerName", getCustomersBySearch);
 
 // create Customer
 router.post('/',createCustomer );

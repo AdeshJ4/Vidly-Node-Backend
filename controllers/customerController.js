@@ -1,20 +1,21 @@
 const mongoose = require("mongoose");
 const { Customer, validateCustomer } = require("../models/customerModel");
-const emailService = require('../utils/emailService');
+const emailService = require("../utils/emailService");
+
+const pageSize = 10;
 /*
     1. @desc : Get All Customers
     2. @route GET : /api/customers?pageNumber=2
     3. @access public
 */
-
 const getCustomers = async (req, res) => {
   try {
     const pageNumber = parseInt(req.query.pageNumber) || 1; // Get the requested page (default to page 1 if not provided)
-    const pageSize = 25;
+    const count = await Customer.countDocuments(); // Count total number of documents in the collection
     const customers = await Customer.find()
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
-    return res.status(200).json(customers);
+    return res.status(200).json({ count, customers }); // Return total count along with paginated movies
   } catch (err) {
     return res.status(500).send(err.message);
   }
@@ -45,6 +46,54 @@ const getCustomer = async (req, res) => {
   }
 };
 
+
+/*
+1. @desc : Get Customers By Membership
+2. @route GET : api/customers/membership/'Gold'?pageNumber=1
+3. @access private
+*/
+const getCustomersByMembership = async (req, res) => {
+  try {
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+    const membership = req.params.membership;
+    const count = await Customer.countDocuments({ "membership": membership });
+    const customers = await Customer.find({ "membership": membership })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+    console.log("customers: ", customers);
+    console.log("count: ", count);
+    return res.status(200).json({ count, customers });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+
+
+/*
+1. @desc : Get Movies By Search Input
+2. @route GET : api/customers/search/:customerName?pageNumber=1
+3. @access private
+*/
+const getCustomersBySearch = async (req, res) => {
+  try {
+    const pageNumber = parseInt(req.query.pageNumber) || 1;
+
+    const customerName = req.params.customerName;
+    const regex = new RegExp(customerName, "i"); // Case-insensitive regex for partial match
+
+    // Search for movies with similar names
+    const count = await Customer.countDocuments({ name: regex });
+    const customers = await Customer.find({ name: regex })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+    return res.status(200).json({ count, customers });
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+
 /*
     1. @desc : Create Customer
     2. @route POST : /api/customers
@@ -61,7 +110,7 @@ const createCustomer = async (req, res) => {
       name: req.body.name,
       phone: req.body.phone,
       email: req.body.email,
-      isGold: req.body.isGold,
+      membership: req.body.membership,
     });
 
     // send emil to customer
@@ -77,7 +126,7 @@ const createCustomer = async (req, res) => {
     Best regards,
     Vidly Team
     `;
-    emailService.sendEmail(customer.email, subject, text);
+    // emailService.sendEmail(customer.email, subject, text);
 
     return res.status(201).send(customer);
   } catch (err) {
@@ -140,6 +189,8 @@ const deleteCustomer = async (req, res) => {
 module.exports = {
   getCustomer,
   getCustomers,
+  getCustomersByMembership,
+  getCustomersBySearch,
   createCustomer,
   updateCustomer,
   deleteCustomer,
