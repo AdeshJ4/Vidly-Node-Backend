@@ -42,16 +42,15 @@ userSchema.methods.generateToken = function () {
     config.get("jwtPrivateKey"),
     { expiresIn: "2 days" }
   );
- 
+
   return token;
 };
-
 
 // this validate function is only for validating new user.
 function validateUserRegister(user) {
   const joiSchema = Joi.object({
     name: Joi.string().required().min(5).max(50).trim(),
-    email: Joi.string().min(11).max(255).required().email(),
+    email: Joi.string().min(11).max(50).required().email(),
     /**
      * Creates a Joi object that validates password complexity.
      * When no options are specified, the following are used:
@@ -80,7 +79,6 @@ function validateUserLogin(user) {
 
   return joiSchema.validate(user);
 }
-
 
 const User = mongoose.model("User", userSchema);
 
