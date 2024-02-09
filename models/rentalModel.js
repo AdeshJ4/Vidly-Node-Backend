@@ -68,10 +68,6 @@ const rentalSchema = new mongoose.Schema({
     type: Number,
     min: 0,
   },
-  lateSubmissionFee: {
-    type: Number,
-    min: 0,
-  },
   totalFee: {
     type: Number,
     min: 0,
