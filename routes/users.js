@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express();
-const {registerUser, loginUser, currentUser, getUsers, updateUser, deleteUser, getUser} = require('../controllers/usersController');
+const {registerUser, loginUser, getUser, getUsers, updateUser, deleteUser, getUserByName} = require('../controllers/usersController');
 const validateToken = require('../middlewares/validateTokenHandler');
 /**
  * -> Vidly is application that runs locally in video store.
@@ -22,7 +22,12 @@ router.post("/login", loginUser);
 // get all users/employees
 router.get("/", getUsers);
 
-router.get("/:userName", getUser)
+// get user by id
+// get a movie
+router.get("/:id", getUser);
+
+// get user by username
+router.get("/search/:userName", getUserByName);
 
 // Update User
 // router.put("/:id", updateUser);

@@ -22,7 +22,7 @@ router.get("/:id", getMovie);
 router.get("/genre/:genre", getMoviesByGenre);
 
 // get movies according to search
-router.get("/search/:movieName", getMoviesBySearch);
+    router.get("/search/:movieName", getMoviesBySearch);
 
 // create a movie
 router.post("/", validateToken, createMovie);

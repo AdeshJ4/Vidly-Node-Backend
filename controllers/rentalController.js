@@ -23,6 +23,7 @@ const getRentals = async (req, res) => {
     return res.status(500).send(err.message);
   }
 };
+
 /*
     1. @desc : Get rental
     2. @route GET : /api/rentals/:id

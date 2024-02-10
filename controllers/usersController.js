@@ -96,12 +96,31 @@ const getUsers = async (req, res) => {
 };
 
 /*
-    1. @desc : Get users
+    1. @desc : Get Single User
     2. @route GET : /api/users/:id
     3. @access private
 */
-
 const getUser = async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id))
+      return res.status(400).send("Invalid Employee Id");
+
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) return res.status(404).send("User Not Found");
+
+    return res.status(200).json(user);
+  } catch (err) {
+    return res.status(500).send(err.message);
+  }
+};
+
+
+/*
+    1. @desc : Get users
+    2. @route GET : /api/users/search:userName
+    3. @access private
+*/
+const getUserByName = async (req, res) => {
   try {
     const pageNumber = parseInt(req.query.pageNumber) || 1;
 
@@ -119,19 +138,7 @@ const getUser = async (req, res) => {
   }
 };
 
-// const getUser = async (req, res) => {
-//   try {
-//     if (!mongoose.Types.ObjectId.isValid(req.params.id))
-//       return res.status(400).send("Invalid Employee Id");
 
-//     const user = await User.findById(req.params.id).select("-password");
-//     if (!user) return res.status(404).send("User Not Found");
-
-//     return res.status(200).json({ count: 1, users: [user] });
-//   } catch (err) {
-//     return res.status(500).send(err.message);
-//   }
-// };
 
 
 
@@ -203,6 +210,7 @@ module.exports = {
   loginUser,
   getUsers,
   getUser,
+  getUserByName,
   updateUser,
   deleteUser
 };
